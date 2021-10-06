@@ -4,21 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/staticLayout">
+    tools:context=".GameActivity">
 
-    <Button
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/staticLayout"
-        android:text="Start Game"
-        android:onClick="onClickStart"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/staticLayout"
-        android:text="High Scores"
-        android:onClick="onClickScore"/>
+        android:text="Game Activity"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
