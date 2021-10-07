@@ -14,6 +14,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameActivity extends AppCompatActivity {
 
     @Override
@@ -71,26 +74,24 @@ public class GameActivity extends AppCompatActivity {
             super.onDraw(canvas);
 
             //If the initial Drawing
-            if (start == false) {
+            if (start == false)
+            {
                 start = true;
-                screenWidth = canvas.getWidth();
-                screenHeight = canvas.getHeight();
                 //Sets the initial x and y position of the ball
-                ball.setXY((screenWidth) / 2, (screenHeight) / 2);
+                ball.setXY((screenWidth) / 2, (screenHeight+20));
+                //Sets the targets motion speeds
+                target.changeDirection(100,0);
             }
             //Otherwise object is set in motion
             else {
                 //Moves the object
                 ball.moveObject();
-
-                //If hits left or right of phone
-                if (ball._x < 0 || ball._x > screenWidth) {
-                    ball.changeDirection(ball._xVelocity * -1, ball._yVelocity);
-                }
-                //If its top or bottom of phone
-                if (ball._y < 0 || ball._y > screenHeight) {
-                    ball.changeDirection(ball._xVelocity, ball._yVelocity*-1);
-                }
+                //Checks for a wall collision
+                ball.checkWallCollision(screenWidth, screenHeight);
+                //Moves the target
+                target.moveObject();
+                //Checks for a wall collision
+                target.checkWallCollision(screenWidth, screenHeight);
             }
 
             //Draws the ball
@@ -98,6 +99,15 @@ public class GameActivity extends AppCompatActivity {
             //Draws a target
             target.drawObject(canvas);
             invalidate();
+        }
+
+        //Gets called whenever the screen size is changed so that the canvas always has the correct size
+        //Is called upon initial creation of the graphics view as well
+        @Override
+        protected void onSizeChanged(int w, int h, int oldw, int oldh)
+        {
+            screenWidth = w;
+            screenHeight =h;
         }
 
         //Overrides the on touch so that the gesture detector knows that it is the motion event
@@ -119,9 +129,13 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public boolean onDown(MotionEvent e)
             {
-                //When finger is pressed down the ball should stop moving and go to the position of the finger
-                ball.setXY(e.getX(), e.getY());
-                ball.changeDirection(0,0);
+                //Ball is only throwable from bottom 1/5 of screen
+                if(e.getY() > (screenHeight/5*4))
+                {
+                    //When finger is pressed down the ball should stop moving and go to the position of the finger
+                    ball.setXY(e.getX(), e.getY());
+                    ball.changeDirection(0,0);
+                }
                 //Log.d(TAG, "onDown");
                 return true;
             }
@@ -129,8 +143,12 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
             {
-                //When the ball is flung it should be sent in the direction it was flung
-                ball.changeDirection(velocityX, velocityY);
+                //Ball is only throwable from bottom 1/5 of screen
+                if(e1.getY() > (screenHeight/5*4))
+                {
+                    //When the ball is flung it should be sent in the direction it was flung
+                    ball.changeDirection(velocityX, velocityY);
+                }
                 Log.d(TAG, "onFling");
                 return false;
             }
@@ -187,6 +205,18 @@ public class GameActivity extends AppCompatActivity {
         {
             _xVelocity = xDir;
             _yVelocity = yDir;
+        }
+
+        public void checkWallCollision(float x_col, float y_col)
+        {
+            //If hits left or right of phone
+            if (_x < 0 || _x > x_col) {
+                changeDirection(_xVelocity * -1, _yVelocity);
+            }
+            //If its top or bottom of phone
+            if (_y < 0 || _y > y_col) {
+                changeDirection(_xVelocity, _yVelocity*-1);
+            }
         }
     }
 }
