@@ -107,7 +107,7 @@ public class GameActivity extends AppCompatActivity {
         protected void onSizeChanged(int w, int h, int oldw, int oldh)
         {
             screenWidth = w;
-            screenHeight =h;
+            screenHeight = h;
         }
 
         //Overrides the on touch so that the gesture detector knows that it is the motion event
