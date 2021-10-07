@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,11 +14,14 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
+
+    private TextView score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,9 @@ public class GameActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(uiOptions);
         ;
 
+
+        //Initialises view at the start so can be set in the graphics view onDraw method
+        score = (TextView)findViewById(R.id.score_text);
         //Gets hold of the constraint layout and creates a new graphics view instance
         GraphicsView graphics = new GraphicsView(this);
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.graphics_contraint);
@@ -61,6 +68,8 @@ public class GameActivity extends AppCompatActivity {
 
         String TAG = "TAG_GESTURE";
 
+        int current_score;
+
         //Constructor to initialise the view with the correct context and sets the brush color
         public GraphicsView(Context context)
         {
@@ -78,7 +87,7 @@ public class GameActivity extends AppCompatActivity {
             {
                 start = true;
                 //Sets the initial x and y position of the ball
-                ball.setXY((screenWidth) / 2, (screenHeight+20));
+                ball.resetBall(screenWidth, screenHeight);
                 //Sets the targets motion speeds
                 target.changeDirection(100,0);
             }
@@ -92,6 +101,15 @@ public class GameActivity extends AppCompatActivity {
                 target.moveObject();
                 //Checks for a wall collision
                 target.checkWallCollision(screenWidth, screenHeight);
+                //Checks if the ball collides with the target
+                if(ball.objectCollision(target)){
+                    Log.d(TAG, "collision");
+                    ball.resetBall(screenWidth, screenHeight);
+                    //Updates the score in the text view
+                    current_score++;
+                    String scr = String.valueOf(current_score);
+                    score.setText(scr);
+                }
             }
 
             //Draws the ball
@@ -165,8 +183,8 @@ public class GameActivity extends AppCompatActivity {
         public float _y;
         Paint brush = new Paint();
         public int _radius;
-        float _xVelocity = 0;
-        float _yVelocity = 0;
+        float _xVelocity;
+        float _yVelocity;
 
         //Constructor to be used if no initial position given
         public gameObject() { }
@@ -207,6 +225,7 @@ public class GameActivity extends AppCompatActivity {
             _yVelocity = yDir;
         }
 
+        //Checks for a collision with any of the walls
         public void checkWallCollision(float x_col, float y_col)
         {
             //If hits left or right of phone
@@ -214,9 +233,33 @@ public class GameActivity extends AppCompatActivity {
                 changeDirection(_xVelocity * -1, _yVelocity);
             }
             //If its top or bottom of phone
-            if (_y < 0 || _y > y_col) {
+            if (_y > y_col) {
                 changeDirection(_xVelocity, _yVelocity*-1);
             }
+            //If hits the top of the screen ball is reset
+            if(_y < 0){
+                resetBall(x_col, y_col);
+            }
+        }
+
+        //Checks if there is a collision between two objects
+        public boolean objectCollision(gameObject object){
+            double xDistance = _x - object._x;
+            double yDistance = _y - object._y;
+
+            //Calculates the distance between the two circles radius and there current x and y to see if collided
+            double sumOfRadii = _radius + object._radius;
+            double distanceSquared = xDistance * xDistance + yDistance * yDistance;
+
+            //If the two circles touch each other
+            boolean isOverlapping = distanceSquared  <= sumOfRadii * sumOfRadii;
+            return isOverlapping;
+        }
+
+        //Need to put in inherited ball class
+        public void resetBall(float width, float height){
+            setXY((width) / 2, (height+20));
+            changeDirection(0, 0);
         }
     }
 }
