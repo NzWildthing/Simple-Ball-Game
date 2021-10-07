@@ -9,6 +9,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class GameActivity extends AppCompatActivity {
@@ -40,6 +43,8 @@ public class GameActivity extends AppCompatActivity {
     //Creates the custom class GraphicsView which inherits from the view class to draw objects on the screen
     public class GraphicsView extends View {
 
+        private GestureDetector gestureDetector;
+
         //Initialises a ball game object
         gameObject ball = new gameObject(0, 0, 50, getColor(R.color.design_default_color_primary));
         gameObject target = new gameObject(50, 50, 50, getColor(R.color.design_default_color_secondary));
@@ -51,9 +56,13 @@ public class GameActivity extends AppCompatActivity {
         //Makes sure ball doesn't move unless a touch is initiated
         boolean start = false;
 
+        String TAG = "TAG_GESTURE";
+
         //Constructor to initialise the view with the correct context and sets the brush color
-        public GraphicsView(Context context) {
+        public GraphicsView(Context context)
+        {
             super(context);
+            gestureDetector = new GestureDetector(context, new BallGestureListener());
         }
 
         //Overrides the draw method to draw a circle on the canvas
@@ -90,7 +99,45 @@ public class GameActivity extends AppCompatActivity {
             target.drawObject(canvas);
             invalidate();
         }
+
+        //Overrides the on touch so that the gesture detector knows that it is the motion event
+        @Override
+        public boolean onTouchEvent(MotionEvent event)
+        {
+            if (gestureDetector.onTouchEvent(event))
+            {
+                return true;
+            }
+            return super.onTouchEvent(event);
+        }
+
+        //A gesture listener for the ball
+        public class BallGestureListener extends GestureDetector.SimpleOnGestureListener
+        {
+
+            //Overrides a onDown gesture and a onFling gesture
+            @Override
+            public boolean onDown(MotionEvent e)
+            {
+                //When finger is pressed down the ball should stop moving and go to the position of the finger
+                ball.setXY(e.getX(), e.getY());
+                ball.changeDirection(0,0);
+                //Log.d(TAG, "onDown");
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
+            {
+                //When the ball is flung it should be sent in the direction it was flung
+                ball.changeDirection(velocityX, velocityY);
+                Log.d(TAG, "onFling");
+                return false;
+            }
+        }
     }
+
+
 
     //Class to create a gameObject
     public class gameObject
@@ -100,8 +147,8 @@ public class GameActivity extends AppCompatActivity {
         public float _y;
         Paint brush = new Paint();
         public int _radius;
-        int _xVelocity = 3;
-        int _yVelocity = 3;
+        float _xVelocity = 0;
+        float _yVelocity = 0;
 
         //Constructor to be used if no initial position given
         public gameObject() { }
@@ -131,12 +178,12 @@ public class GameActivity extends AppCompatActivity {
         //Moves the game object in its current direction
         public void moveObject()
         {
-            _x += _xVelocity;
-            _y += _yVelocity;
+            _x += _xVelocity/100;
+            _y += _yVelocity/100;
         }
 
         //Change object direction
-        public void changeDirection(int xDir, int yDir)
+        public void changeDirection(float xDir, float yDir)
         {
             _xVelocity = xDir;
             _yVelocity = yDir;
