@@ -8,20 +8,82 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="4">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="High Score"
+                android:textColor="@color/grey"
+                android:textSize="50dp"
+                android:layout_weight="4"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/initial_score"
+                android:textColor="@color/grey"
+                android:textSize="50dp"
+                android:layout_weight="4"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="4">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Last Score"
+                android:textColor="@color/grey"
+                android:textSize="50dp"
+                android:layout_weight="4"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/initial_score"
+                android:textColor="@color/grey"
+                android:textSize="50dp"
+                android:layout_weight="4"/>
+
+        </LinearLayout>
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:text="Replay"
-            android:onClick="onClickReplay"/>
+            android:layout_marginTop="50dp"
+            android:textSize="30dp"
+            android:onClick="onClickReplay"
+            android:backgroundTint="@drawable/button_state"
+            />
 
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="260dp"
+            android:layout_height="match_parent"
+            android:onClick="onClickHome"
+            android:layout_marginTop="50dp"
             android:text="Home"
-            android:onClick="onClickHome"/>
-    </LinearLayout>
+            android:textSize="30dp"
+            android:backgroundTint="@drawable/button_state"/>
 
+
+
+
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

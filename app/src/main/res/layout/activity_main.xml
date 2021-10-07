@@ -4,8 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/staticLayout">
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:id="@+id/background_graphics"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,11 +19,23 @@
         android:gravity="center">
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
+            android:onClick="onClickStart"
             android:text="Start Game"
-            android:onClick="onClickStart"/>
+            android:textSize="30dp"
+            android:backgroundTint="@drawable/button_state"
+/>
 
+        <Button
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:text="High Scores"
+            android:layout_marginTop="50dp"
+            android:textSize="30dp"
+            android:onClick="onClickScore"
+            android:backgroundTint="@drawable/button_state"
+            />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

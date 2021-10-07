@@ -49,8 +49,8 @@ public class GameActivity extends AppCompatActivity {
         private GestureDetector gestureDetector;
 
         //Initialises a ball game object
-        gameObject ball = new gameObject(0, 0, 50, getColor(R.color.design_default_color_primary));
-        gameObject target = new gameObject(50, 50, 50, getColor(R.color.design_default_color_secondary));
+        gameObject ball = new gameObject(0, 0, 50, getColor(R.color.crimson));
+        gameObject target = new gameObject(50, 50, 50, getColor(R.color.gold));
 
         //Screen width and height for calculations
         float screenWidth;
