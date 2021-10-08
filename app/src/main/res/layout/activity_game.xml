@@ -14,15 +14,47 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/score_text"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/initial_score"
-            android:textColor="@color/grey"
-            android:textSize="100dp"
-            android:layout_weight="4"/>
+            android:layout_weight="4">
+
+            <TextView
+                android:id="@+id/score_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/initial_score"
+                android:textColor="@color/grey"
+                android:textSize="100dp"
+                android:layout_weight="4"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="100dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lives: "
+                    android:textColor="@color/grey"
+                    android:textSize="30dp"
+
+                    />
+                <TextView
+                    android:id="@+id/lives_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/initial_score"
+                    android:textColor="@color/grey"
+                    android:textSize="30dp"
+                    />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <!--image view for interactive zone-->
         <ImageView
@@ -30,8 +62,6 @@
             android:layout_height="2dp"
             android:layout_weight="1.2"
             android:background="@drawable/boundary"/>
-
-
 
 </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

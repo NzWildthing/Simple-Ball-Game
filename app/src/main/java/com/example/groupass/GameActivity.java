@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
 
-    private TextView score;
+    private TextView score, curr_lives;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,9 @@ public class GameActivity extends AppCompatActivity {
         ;
 
 
-        //Initialises view at the start so can be set in the graphics view onDraw method
+        //Initialises views at the start so can be set in the graphics view onDraw method
         score = (TextView)findViewById(R.id.score_text);
+        curr_lives = (TextView) findViewById(R.id.lives_text);
         //Gets hold of the constraint layout and creates a new graphics view instance
         GraphicsView graphics = new GraphicsView(this);
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.graphics_contraint);
@@ -69,6 +71,13 @@ public class GameActivity extends AppCompatActivity {
         String TAG = "TAG_GESTURE";
 
         int current_score;
+        int lives = 3;
+
+        //setting preferences
+        SharedPreferences prefs = getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        //getting current high score
+        int high_score = prefs.getInt("highkey", 0);
 
         //Constructor to initialise the view with the correct context and sets the brush color
         public GraphicsView(Context context)
@@ -93,6 +102,7 @@ public class GameActivity extends AppCompatActivity {
             }
             //Otherwise object is set in motion
             else {
+
                 //Moves the object
                 ball.moveObject();
                 //Checks for a wall collision
@@ -109,7 +119,28 @@ public class GameActivity extends AppCompatActivity {
                     current_score++;
                     String scr = String.valueOf(current_score);
                     score.setText(scr);
+                    //stores current score as preference
+                    editor.putInt("prevkey", current_score);
+                    editor.commit();
+                    if(current_score>high_score){
+                        editor.putInt("highkey", current_score);
+                        editor.commit();
+                    }
                 }
+
+                //checks if they have missed
+                if( ball.checkMiss() && !ball.objectCollision(target)){
+                    lives-=1;
+                    String scrL = String.valueOf(lives);
+                    curr_lives.setText(scrL);
+                }
+
+                //checks if they have run out of lives
+                if(lives==0){
+                    Intent game_over = new Intent(this.getContext(), HighScores.class);
+                    startActivity(game_over);
+                }
+
             }
 
             //Draws the ball
@@ -204,6 +235,18 @@ public class GameActivity extends AppCompatActivity {
             _x = newX;
             _y = newY;
         }
+
+        //checks if ball hits the top of the phone
+        public boolean checkMiss() {
+            if (_y < 0) {
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        }
+
 
         //Draws the gameObject
         public void drawObject(Canvas canvas)
