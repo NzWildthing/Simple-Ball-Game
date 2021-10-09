@@ -73,6 +73,7 @@ public class GameActivity extends AppCompatActivity {
         int current_score;
         int lives = 3;
 
+
         //setting preferences
         SharedPreferences prefs = getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -98,7 +99,7 @@ public class GameActivity extends AppCompatActivity {
                 //Sets the initial x and y position of the ball
                 ball.resetBall(screenWidth, screenHeight);
                 //Sets the targets motion speeds
-                target.changeDirection(100,0);
+                target.changeDirection(150,0);
             }
             //Otherwise object is set in motion
             else {
@@ -192,13 +193,18 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
             {
+                double total_velocity = Math.sqrt((velocityX*velocityX)+(velocityY*velocityY));
                 //Ball is only throwable from bottom 1/5 of screen
                 if(e1.getY() > (screenHeight/5*4))
                 {
-                    //When the ball is flung it should be sent in the direction it was flung
-                    ball.changeDirection(velocityX, velocityY);
+                    //Ball will only be fling if enough power is put into the fling
+                    if(total_velocity >5000 || total_velocity <-5000)
+                    {
+                        //When the ball is flung it should be sent in the direction it was flung
+                        ball.changeDirection(velocityX, velocityY);
+                    }
                 }
-                Log.d(TAG, "onFling");
+                Log.d(TAG, String.valueOf(velocityY));
                 return false;
             }
         }
@@ -264,6 +270,19 @@ public class GameActivity extends AppCompatActivity {
         //Change object direction
         public void changeDirection(float xDir, float yDir)
         {
+            //Makes sure the ball always travels at the same speed so will take down if given a speed too fast
+            if(xDir > 5000){
+                xDir = 5000;
+            }
+            else if(xDir < -5000){
+                xDir = - 5000;
+            }
+            if(yDir > 5000){
+                yDir = 5000;
+            }
+            else if(yDir < -5000){
+                yDir = -5000;
+            }
             _xVelocity = xDir;
             _yVelocity = yDir;
         }
