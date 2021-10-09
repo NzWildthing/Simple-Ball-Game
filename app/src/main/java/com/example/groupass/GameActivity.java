@@ -71,7 +71,6 @@ public class GameActivity extends AppCompatActivity {
         String TAG = "TAG_GESTURE";
 
         int current_score;
-        int lives = 3;
 
 
         //setting preferences
@@ -129,15 +128,8 @@ public class GameActivity extends AppCompatActivity {
                     }
                 }
 
-                //checks if they have missed
-                if( ball.checkMiss() && !ball.objectCollision(target)){
-                    lives-=1;
-                    String scrL = String.valueOf(lives);
-                    curr_lives.setText(scrL);
-                }
-
                 //checks if they have run out of lives
-                if(lives==0){
+                if(ball.lives==0){
                     Intent game_over = new Intent(this.getContext(), HighScores.class);
                     startActivity(game_over);
                 }
@@ -223,6 +215,8 @@ public class GameActivity extends AppCompatActivity {
         float _xVelocity;
         float _yVelocity;
 
+        int lives = 3;
+
         //Constructor to be used if no initial position given
         public gameObject() { }
 
@@ -233,6 +227,9 @@ public class GameActivity extends AppCompatActivity {
             _y = yPos;
             _radius = radius;
             brush.setColor(rColor);
+            //When the ball is created so are its lives
+            String scrL = String.valueOf(lives);
+            curr_lives.setText(scrL);
         }
 
         //Sets the X and Y value of the gameObject
@@ -240,17 +237,6 @@ public class GameActivity extends AppCompatActivity {
         {
             _x = newX;
             _y = newY;
-        }
-
-        //checks if ball hits the top of the phone
-        public boolean checkMiss() {
-            if (_y < 0) {
-                return true;
-            }
-            else{
-                return false;
-            }
-
         }
 
 
@@ -300,6 +286,10 @@ public class GameActivity extends AppCompatActivity {
             }
             //If hits the top of the screen ball is reset
             if(_y < 0){
+                //When the ball is reset the lives counter goes down
+                lives-=1;
+                String scrL = String.valueOf(lives);
+                curr_lives.setText(scrL);
                 resetBall(x_col, y_col);
             }
         }
