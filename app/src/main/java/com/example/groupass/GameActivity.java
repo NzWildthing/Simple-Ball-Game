@@ -1,5 +1,6 @@
 package com.example.groupass;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
@@ -58,8 +61,10 @@ public class GameActivity extends AppCompatActivity {
         private GestureDetector gestureDetector;
 
         //Initialises a ball game object
-        gameObject ball = new gameObject(0, 0, 50, getColor(R.color.crimson));
-        gameObject target = new gameObject(50, 50, 50, getColor(R.color.gold));
+        public Ball ball = new Ball(0, 0, getColor(R.color.crimson), 50);
+        public Target target = new Target(50, 50, getColor(R.color.gold), 50);
+
+        public List<gameObject> objects = new ArrayList<gameObject>();
 
         //Screen width and height for calculations
         float screenWidth;
@@ -84,6 +89,9 @@ public class GameActivity extends AppCompatActivity {
         {
             super(context);
             gestureDetector = new GestureDetector(context, new BallGestureListener());
+            //Adds the ball and target to the object list
+            objects.add(ball);
+            objects.add(target);
         }
 
         //Overrides the draw method to draw a circle on the canvas
@@ -102,45 +110,49 @@ public class GameActivity extends AppCompatActivity {
             }
             //Otherwise object is set in motion
             else {
-
-                //Moves the object
-                ball.moveObject();
-                //Checks for a wall collision
-                ball.checkWallCollision(screenWidth, screenHeight);
-                //Moves the target
-                target.moveObject();
-                //Checks for a wall collision
-                target.checkWallCollision(screenWidth, screenHeight);
+                //Moves objects and checks for wall collisions
+                for(int i = 0; i < objects.size(); i++)
+                {
+                    objects.get(i).moveObject();
+                    objects.get(i).checkWallCollision(screenWidth, screenHeight);
+                }
                 //Checks if the ball collides with the target
                 if(ball.objectCollision(target)){
-                    Log.d(TAG, "collision");
-                    ball.resetBall(screenWidth, screenHeight);
-                    //Updates the score in the text view
-                    current_score++;
-                    String scr = String.valueOf(current_score);
-                    score.setText(scr);
-                    //stores current score as preference
-                    editor.putInt("prevkey", current_score);
-                    editor.commit();
-                    if(current_score>high_score){
-                        editor.putInt("highkey", current_score);
-                        editor.commit();
-                    }
+                    //If it does update score
+                    updateScore();
                 }
 
                 //checks if they have run out of lives
-                if(ball.lives==0){
+                if(ball._lives==0){
                     Intent game_over = new Intent(this.getContext(), HighScores.class);
                     startActivity(game_over);
                 }
 
             }
 
-            //Draws the ball
-            ball.drawObject(canvas);
-            //Draws a target
-            target.drawObject(canvas);
+            //Draws objects
+            for(int i = 0; i < objects.size(); i++)
+            {
+                objects.get(i).drawObject(canvas);
+            }
             invalidate();
+        }
+
+        //Updates the current score on the screen and checks if new high score
+        public void updateScore()
+        {
+            ball.resetBall(screenWidth, screenHeight);
+            //Updates the score in the text view
+            current_score++;
+            String scr = String.valueOf(current_score);
+            score.setText(scr);
+            //stores current score as preference
+            editor.putInt("prevkey", current_score);
+            editor.commit();
+            if(current_score>high_score){
+                editor.putInt("highkey", current_score);
+                editor.commit();
+            }
         }
 
         //Gets called whenever the screen size is changed so that the canvas always has the correct size
@@ -211,25 +223,17 @@ public class GameActivity extends AppCompatActivity {
         public float _x;
         public float _y;
         Paint brush = new Paint();
-        public int _radius;
         float _xVelocity;
         float _yVelocity;
-
-        int lives = 3;
-
-        //Constructor to be used if no initial position given
-        public gameObject() { }
+        int _radius;
 
         //Constructor for initialising a gameObject
-        public gameObject(float xPos, float yPos, int radius, int rColor)
+        public gameObject(float xPos, float yPos, int rColor, int radius)
         {
             _x = xPos;
             _y = yPos;
-            _radius = radius;
             brush.setColor(rColor);
-            //When the ball is created so are its lives
-            String scrL = String.valueOf(lives);
-            curr_lives.setText(scrL);
+            _radius = radius;
         }
 
         //Sets the X and Y value of the gameObject
@@ -256,19 +260,6 @@ public class GameActivity extends AppCompatActivity {
         //Change object direction
         public void changeDirection(float xDir, float yDir)
         {
-            //Makes sure the ball always travels at the same speed so will take down if given a speed too fast
-            if(xDir > 5000){
-                xDir = 5000;
-            }
-            else if(xDir < -5000){
-                xDir = - 5000;
-            }
-            if(yDir > 5000){
-                yDir = 5000;
-            }
-            else if(yDir < -5000){
-                yDir = -5000;
-            }
             _xVelocity = xDir;
             _yVelocity = yDir;
         }
@@ -283,14 +274,6 @@ public class GameActivity extends AppCompatActivity {
             //If its top or bottom of phone
             if (_y > y_col) {
                 changeDirection(_xVelocity, _yVelocity*-1);
-            }
-            //If hits the top of the screen ball is reset
-            if(_y < 0){
-                //When the ball is reset the lives counter goes down
-                lives-=1;
-                String scrL = String.valueOf(lives);
-                curr_lives.setText(scrL);
-                resetBall(x_col, y_col);
             }
         }
 
@@ -308,10 +291,74 @@ public class GameActivity extends AppCompatActivity {
             return isOverlapping;
         }
 
-        //Need to put in inherited ball class
+    }
+
+    //Class for a ball game object
+    public class Ball extends gameObject
+    {
+        public int _lives = 3;
+
+        public Ball(float xPos, float yPos, int rColor, int radius)
+        {
+            //Calls the game object super class
+            super(xPos, yPos, rColor, radius);
+            //When the ball is created so are its lives
+            String scrL = String.valueOf(_lives);
+            curr_lives.setText(scrL);
+        }
+
+        //Resets the ball to the starting position
         public void resetBall(float width, float height){
+            //Sets the x and y of the ball to current height and width of screen
             setXY((width) / 2, (height+20));
-            changeDirection(0, 0);
+            //Calls super as no need to go through unnecessary processing
+            super.changeDirection(0, 0);
+        }
+
+        @Override
+        //Makes sure the ball only travels at a certain speed once flung
+        public void changeDirection(float xDir, float yDir)
+        {
+            //Makes sure the ball always travels at the same speed so will take down if given a speed too fast
+            if(xDir > 5000){
+                xDir = 5000;
+            }
+            else if(xDir < -5000){
+                xDir = - 5000;
+            }
+            if(yDir > 5000){
+                yDir = 5000;
+            }
+            else if(yDir < -5000){
+                yDir = -5000;
+            }
+
+            //Calls the main method
+            super.changeDirection(xDir, yDir);
+        }
+
+        @Override
+        public void checkWallCollision(float x_col, float y_col)
+        {
+            //Extra processing for if ball has missed
+            //If hits the top of the screen ball is reset
+            if(_y < 0){
+                //When the ball is reset the lives counter goes down
+                _lives-=1;
+                String scrL = String.valueOf(_lives);
+                curr_lives.setText(scrL);
+                resetBall(x_col, y_col);
+            }
+            super.checkWallCollision(x_col, y_col);
+        }
+    }
+
+    //Class for a target game object
+    public class Target extends gameObject
+    {
+        public Target(float xPos, float yPos, int rColor, int radius) {
+            //Calls the game object super class
+            super(xPos, yPos, rColor, radius);
         }
     }
 }
