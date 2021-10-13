@@ -72,6 +72,7 @@ public class GameActivity extends AppCompatActivity {
 
         //Makes sure ball doesn't move unless a touch is initiated
         boolean start = false;
+        boolean gameOver = false;
 
         String TAG = "TAG_GESTURE";
 
@@ -97,6 +98,9 @@ public class GameActivity extends AppCompatActivity {
         //Overrides the draw method to draw a circle on the canvas
         @Override
         public void onDraw(Canvas canvas) {
+            if(gameOver == true){
+                return;
+            }
             super.onDraw(canvas);
 
             //If the initial Drawing
@@ -110,6 +114,12 @@ public class GameActivity extends AppCompatActivity {
             }
             //Otherwise object is set in motion
             else {
+
+                //checks if they have run out of lives
+                if(ball._lives==0){
+                    gameOver = true;
+                    gameOver();
+                }
                 //Moves objects and checks for wall collisions
                 for(int i = 0; i < objects.size(); i++)
                 {
@@ -122,11 +132,6 @@ public class GameActivity extends AppCompatActivity {
                     updateScore();
                 }
 
-                //checks if they have run out of lives
-                if(ball._lives==0){
-                    Intent game_over = new Intent(this.getContext(), HighScores.class);
-                    startActivity(game_over);
-                }
 
             }
 
@@ -136,6 +141,12 @@ public class GameActivity extends AppCompatActivity {
                 objects.get(i).drawObject(canvas);
             }
             invalidate();
+        }
+
+        public void gameOver()
+        {
+            Intent game_over = new Intent(GameActivity.this, HighScores.class);
+            startActivity(game_over);
         }
 
         //Updates the current score on the screen and checks if new high score

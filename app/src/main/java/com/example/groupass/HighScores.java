@@ -1,5 +1,6 @@
 package com.example.groupass;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -16,6 +17,18 @@ public class HighScores extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_high_scores);
+
+        //Hide action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+
+        //Enabling immersive mode
+        int uiOptions = View. SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View. SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+        ;
+
         //Initialises views for scores
         TextView scoreP = (TextView) findViewById(R.id.score_prev);
         TextView scoreH = (TextView) findViewById(R.id.score_high);
