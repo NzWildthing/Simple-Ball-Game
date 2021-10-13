@@ -103,6 +103,13 @@ public class GameActivity extends AppCompatActivity {
             }
             super.onDraw(canvas);
 
+            //if score is zero
+            if(current_score==0){
+                // set the prev score preference as 0
+                editor.putInt("prevkey", 0);
+                editor.commit();
+            }
+
             //If the initial Drawing
             if (start == false)
             {
