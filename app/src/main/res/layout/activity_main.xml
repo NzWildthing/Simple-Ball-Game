@@ -24,18 +24,9 @@
             android:onClick="onClickStart"
             android:text="Start Game"
             android:textSize="30dp"
-            android:backgroundTint="@drawable/button_state"
-/>
+            android:backgroundTint="@drawable/button_state" />
 
-        <Button
-            android:layout_width="260dp"
-            android:layout_height="wrap_content"
-            android:text="High Scores"
-            android:layout_marginTop="50dp"
-            android:textSize="30dp"
-            android:onClick="onClickScore"
-            android:backgroundTint="@drawable/button_state"
-            />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

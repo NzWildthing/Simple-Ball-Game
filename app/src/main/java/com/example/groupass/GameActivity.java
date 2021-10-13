@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,8 +21,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -64,7 +68,9 @@ public class GameActivity extends AppCompatActivity {
         public Ball ball = new Ball(0, 0, getColor(R.color.crimson), 50);
         public Target target = new Target(50, 50, getColor(R.color.gold), 50);
 
+        //creating lists
         public List<gameObject> objects = new ArrayList<gameObject>();
+        public List<Integer> high_scores = new ArrayList<Integer>();
 
         //Screen width and height for calculations
         float screenWidth;
@@ -75,15 +81,15 @@ public class GameActivity extends AppCompatActivity {
         boolean gameOver = false;
 
         String TAG = "TAG_GESTURE";
-
-        int current_score;
+        int current_score, minHigh, size;
 
 
         //setting preferences
         SharedPreferences prefs = getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        //getting current high score
-        int high_score = prefs.getInt("highkey", 0);
+
+
+
 
         //Constructor to initialise the view with the correct context and sets the brush color
         public GraphicsView(Context context)
@@ -138,8 +144,6 @@ public class GameActivity extends AppCompatActivity {
                     //If it does update score
                     updateScore();
                 }
-
-
             }
 
             //Draws objects
@@ -150,10 +154,61 @@ public class GameActivity extends AppCompatActivity {
             invalidate();
         }
 
+
+
+
+
         public void gameOver()
         {
+            int size = prefs.getInt("Status_size", 0);
+
+            for (int i = 0; i < size; i++) {
+                high_scores.add(prefs.getInt("Status_" + i, 0));
+            }
+            Collections.sort(high_scores);
+
+
+            //if scoreboard is full set lowest high score to 0 else find lowest value
+            if(5>size){
+                minHigh=0;
+            }
+            else{
+                minHigh=findMin(high_scores);
+            }
+            if(current_score>minHigh){
+                //removes lowest high score if high score page is already full
+                if(5==size){
+                    high_scores.remove(0);
+                }
+                high_scores.add(current_score);
+                saveArray();
+            }
             Intent game_over = new Intent(GameActivity.this, HighScores.class);
             startActivity(game_over);
+        }
+
+        public boolean saveArray()
+        {
+
+            size = high_scores.size();
+
+            editor.putInt("Status_size", size);
+
+            for(int i=0; i<size; i++)
+            {
+                editor.remove("Status_" + i);
+                editor.putInt("Status_" + i, high_scores.get(i));
+            }
+
+            return editor.commit();
+        }
+
+        //find the lowest of the top 5 high scores
+        public Integer findMin(List<Integer> list)
+        {
+            List<Integer> sortedHigh = new ArrayList<>(list);
+            Collections.sort(sortedHigh);
+            return sortedHigh.get(0);
         }
 
         //Updates the current score on the screen and checks if new high score
@@ -167,10 +222,6 @@ public class GameActivity extends AppCompatActivity {
             //stores current score as preference
             editor.putInt("prevkey", current_score);
             editor.commit();
-            if(current_score>high_score){
-                editor.putInt("highkey", current_score);
-                editor.commit();
-            }
         }
 
         //Gets called whenever the screen size is changed so that the canvas always has the correct size
@@ -231,8 +282,6 @@ public class GameActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
     //Class to create a gameObject
     public class gameObject

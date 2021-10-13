@@ -95,10 +95,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(start);
     }
 
-    //When the high scores button is clicked the high score list is opened
-    public void onClickScore(View v){
-        //Creates an explicit intent which opens up the HighScores class
-        Intent open = new Intent(this, HighScores.class);
-        startActivity(open);
-    }
+
 }
