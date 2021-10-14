@@ -492,4 +492,6 @@ public class GameActivity extends AppCompatActivity {
             setXY(-1, -1);
         }
     }
+
+    public class targ
 }
