@@ -497,7 +497,7 @@ public class GameActivity extends AppCompatActivity {
         //Resets the powerup
         public void reset()
         {
-            setXY(-1, -1);
+            setXY(-100, -1);
         }
     }
 }
