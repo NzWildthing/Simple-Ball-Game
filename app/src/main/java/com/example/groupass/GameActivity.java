@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.Random;
+
 public class GameActivity extends AppCompatActivity {
 
     private TextView score, curr_lives;
@@ -67,6 +69,8 @@ public class GameActivity extends AppCompatActivity {
         //Initialises a ball game object
         public Ball ball = new Ball(0, 0, getColor(R.color.crimson), 50);
         public Target target = new Target(50, 50, getColor(R.color.gold), 50);
+        public livesPowerUp extraLives = new livesPowerUp(0, 0, getColor(R.color.black), 50);
+        public Random rnd = new Random();
 
         //creating lists
         public List<gameObject> objects = new ArrayList<gameObject>();
@@ -79,6 +83,7 @@ public class GameActivity extends AppCompatActivity {
         //Makes sure ball doesn't move unless a touch is initiated
         boolean start = false;
         boolean gameOver = false;
+        boolean activePowerUp = false;
 
         String TAG = "TAG_GESTURE";
         int current_score, minHigh, size;
@@ -127,7 +132,6 @@ public class GameActivity extends AppCompatActivity {
             }
             //Otherwise object is set in motion
             else {
-
                 //checks if they have run out of lives
                 if(ball._lives==0){
                     gameOver = true;
@@ -144,7 +148,14 @@ public class GameActivity extends AppCompatActivity {
                     //If it does update score
                     updateScore();
                 }
+                //###############PowerUps##################
+                //Don't bother with powerups unless score is above 0
+                if(current_score != 0)
+                {
+                    extraLife();
+                }
             }
+            //####################Drawing################
 
             //Draws objects
             for(int i = 0; i < objects.size(); i++)
@@ -209,6 +220,27 @@ public class GameActivity extends AppCompatActivity {
             List<Integer> sortedHigh = new ArrayList<>(list);
             Collections.sort(sortedHigh);
             return sortedHigh.get(0);
+        }
+
+        //Checks if a extra life is required
+        public void extraLife()
+        {
+            //If current score is a multiple of 5
+            if(current_score % 5 == 0 && activePowerUp == false)
+            {
+                extraLives.spawn(screenWidth, screenHeight, rnd);
+                objects.add(extraLives);
+                activePowerUp = true;
+            }
+            //Checks if the ball collides with the powerup
+            if(ball.objectCollision(extraLives))
+            {
+                ball.incrementLives(2);
+                //If the ball collides with it reset the powerup and remove it from the drawing list
+                extraLives.reset();
+                objects.remove(extraLives);
+                activePowerUp = false;
+            }
         }
 
         //Updates the current score on the screen and checks if new high score
@@ -363,7 +395,7 @@ public class GameActivity extends AppCompatActivity {
     //Class for a ball game object
     public class Ball extends gameObject
     {
-        public int _lives = 3;
+        public int _lives = 1;
 
         public Ball(float xPos, float yPos, int rColor, int radius)
         {
@@ -418,6 +450,14 @@ public class GameActivity extends AppCompatActivity {
             }
             super.checkWallCollision(x_col, y_col);
         }
+
+        //Increments the players lives by a set amount
+        public void incrementLives(int lives)
+        {
+            _lives += lives;
+            String scrL = String.valueOf(_lives);
+            curr_lives.setText(scrL);
+        }
     }
 
     //Class for a target game object
@@ -426,6 +466,31 @@ public class GameActivity extends AppCompatActivity {
         public Target(float xPos, float yPos, int rColor, int radius) {
             //Calls the game object super class
             super(xPos, yPos, rColor, radius);
+        }
+    }
+
+    //Class for a lives power up
+    public class livesPowerUp extends gameObject
+    {
+        public livesPowerUp(float xPos, float yPos, int rColor, int radius)
+        {
+            //Calls the game object super class
+            super(xPos, yPos, rColor, radius);
+        }
+
+        //Spawns the extra live powerup
+        public void spawn(float width, float height, Random rnd)
+        {
+            int xLive = rnd.nextInt((int)width);
+            int yLive = rnd.nextInt((int)height);
+            //Spawns a random extra lives powerup on the screen somewhere
+            setXY(xLive, yLive);
+        }
+
+        //Resets the powerup
+        public void reset()
+        {
+            setXY(-1, -1);
         }
     }
 }
