@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         public GraphicsView (Context context) {
             super(context);
-            paint.setColor(getColor(R.color.crimson));
+            paint.setColor(getColor(R.color.blue));
 
         }
         @Override

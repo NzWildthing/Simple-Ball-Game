@@ -1,6 +1,5 @@
 package com.example.groupass;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -9,11 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -22,10 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import java.util.Random;
 
@@ -69,7 +62,8 @@ public class GameActivity extends AppCompatActivity {
         //Initialises a ball game object
         public Ball ball = new Ball(0, 0, getColor(R.color.blue), 50);
         public Target target = new Target(50, 50, getColor(R.color.black), getColor(R.color.crimson), 100);
-        public livesPowerUp extraLives = new livesPowerUp(0, 0, getColor(R.color.green), 50);
+        public livesPowerUp extraLives = new livesPowerUp(100000, 1000000, getColor(R.color.green), 50);
+        public speedupObstacle obstacle = new speedupObstacle(1000000, 100000, getColor(R.color.red), 50);
         public Random rnd = new Random();
 
         //creating lists
@@ -84,6 +78,7 @@ public class GameActivity extends AppCompatActivity {
         boolean start = false;
         boolean gameOver = false;
         boolean activePowerUp = false;
+        boolean activeObstacle = false;
 
         String TAG = "TAG_GESTURE";
         int current_score, minHigh, size;
@@ -148,10 +143,17 @@ public class GameActivity extends AppCompatActivity {
                     //If it does update score
                     updateScore();
                 }
-                //Checks extra life
-                if(current_score != 0)
+
+                //Checks if the ball collides with the powerup
+                if(ball.objectCollision(extraLives))
                 {
-                    checkExtraLive();
+                    extraLive();
+                }
+
+                //Checks if the ball collides with the obstacle
+                if(ball.objectCollision(obstacle))
+                {
+                    badObstacle();
                 }
             }
             //####################Drawing################
@@ -217,19 +219,24 @@ public class GameActivity extends AppCompatActivity {
             return sortedHigh.get(0);
         }
 
-        //Checks if a extra life is required
-        public void checkExtraLive()
+        //Obstacle when if hit will increase targets speed
+        public void badObstacle()
         {
-            //Checks if the ball collides with the powerup
-            if(ball.objectCollision(extraLives))
-            {
-                ball.incrementLives(2);
-                //If the ball collides with it reset the powerup and remove it from the drawing list
-                extraLives.reset();
-                objects.remove(extraLives);
-                //Makes the powerup able to spawn again
-                activePowerUp = false;
-            }
+            target.changeDirection((float)(target._xVelocity *2), 0);
+            obstacle.reset();
+            objects.remove(obstacle);
+            activeObstacle = false;
+        }
+
+        //Checks if a extra life is required
+        public void extraLive()
+        {
+            ball.incrementLives(2);
+            //If the ball collides with it reset the powerup and remove it from the drawing list
+            extraLives.reset();
+            objects.remove(extraLives);
+            //Makes the powerup able to spawn again
+            activePowerUp = false;
         }
 
         //Updates the current score on the screen
@@ -244,13 +251,21 @@ public class GameActivity extends AppCompatActivity {
             editor.putInt("prevkey", current_score);
             editor.commit();
 
-            //If current score is a multiple of 5 it spawns an extralives powerup
+            //If current score is a multiple of 3 it spawns an extralives powerup
             //Can only spawn when the updateScore is called therefore can't be duplicates
-            if(current_score % 5 == 0 && activePowerUp == false)
+            if(current_score % 3 == 0 && activePowerUp == false)
             {
                 extraLives.spawn(screenWidth, screenHeight, rnd);
                 objects.add(extraLives);
                 activePowerUp = true;
+            }
+            //If current score is a multiple of 5 it spawns an target speed increase obstacle
+            //Can only spawn when the updateScore is called therefore can't be duplicates
+            if(current_score % 5 == 0 && activeObstacle == false)
+            {
+                obstacle.spawn(screenWidth, screenHeight, rnd);
+                objects.add(obstacle);
+                activeObstacle = true;
             }
         }
 
@@ -497,7 +512,31 @@ public class GameActivity extends AppCompatActivity {
         //Resets the powerup
         public void reset()
         {
-            setXY(-100, -1);
+            setXY(100000, 100000);
+        }
+    }
+
+    //Class for a target speedup obstacle
+    public class speedupObstacle extends gameObject
+    {
+        public speedupObstacle(float xPos, float yPos, int rColor, int radius)
+        {
+            //Calls the game object super class
+            super(xPos, yPos, rColor, radius);
+        }
+        //Spawns the speedup obstacle
+        public void spawn(float width, float height, Random rnd)
+        {
+            int xLive = rnd.nextInt((int)width);
+            int yLive = rnd.nextInt((int)(height-(height/5)));
+            //Spawns a random obstacle on the screen somewhere
+            setXY(xLive, yLive);
+        }
+
+        //Resets the obstacle
+        public void reset()
+        {
+            setXY(10000, 10000);
         }
     }
 }
