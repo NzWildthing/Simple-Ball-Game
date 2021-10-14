@@ -148,11 +148,10 @@ public class GameActivity extends AppCompatActivity {
                     //If it does update score
                     updateScore();
                 }
-                //###############PowerUps##################
-                //Don't bother with powerups unless score is above 0
-                if(current_score != 0)
+                //Checks extra life
+                if(current_score % 5 == 0 && current_score != 0)
                 {
-                    extraLife();
+                    checkExtraLive();
                 }
             }
             //####################Drawing################
@@ -164,9 +163,6 @@ public class GameActivity extends AppCompatActivity {
             }
             invalidate();
         }
-
-
-
 
 
         public void gameOver()
@@ -223,15 +219,8 @@ public class GameActivity extends AppCompatActivity {
         }
 
         //Checks if a extra life is required
-        public void extraLife()
+        public void checkExtraLive()
         {
-            //If current score is a multiple of 5
-            if(current_score % 5 == 0 && activePowerUp == false)
-            {
-                extraLives.spawn(screenWidth, screenHeight, rnd);
-                objects.add(extraLives);
-                activePowerUp = true;
-            }
             //Checks if the ball collides with the powerup
             if(ball.objectCollision(extraLives))
             {
@@ -239,6 +228,7 @@ public class GameActivity extends AppCompatActivity {
                 //If the ball collides with it reset the powerup and remove it from the drawing list
                 extraLives.reset();
                 objects.remove(extraLives);
+                //Makes the powerup able to spawn again
                 activePowerUp = false;
             }
         }
@@ -254,6 +244,15 @@ public class GameActivity extends AppCompatActivity {
             //stores current score as preference
             editor.putInt("prevkey", current_score);
             editor.commit();
+
+            //If current score is a multiple of 5 it spawns an extralives powerup
+            //Can only spawn when the updateScore is called therefore can't be duplicates
+            if(current_score % 5 == 0 && activePowerUp == false)
+            {
+                extraLives.spawn(screenWidth, screenHeight, rnd);
+                objects.add(extraLives);
+                activePowerUp = true;
+            }
         }
 
         //Gets called whenever the screen size is changed so that the canvas always has the correct size
@@ -395,7 +394,7 @@ public class GameActivity extends AppCompatActivity {
     //Class for a ball game object
     public class Ball extends gameObject
     {
-        public int _lives = 1;
+        public int _lives = 10;
 
         public Ball(float xPos, float yPos, int rColor, int radius)
         {
@@ -482,7 +481,7 @@ public class GameActivity extends AppCompatActivity {
         public void spawn(float width, float height, Random rnd)
         {
             int xLive = rnd.nextInt((int)width);
-            int yLive = rnd.nextInt((int)height);
+            int yLive = rnd.nextInt((int)(height-(height/5)));
             //Spawns a random extra lives powerup on the screen somewhere
             setXY(xLive, yLive);
         }
