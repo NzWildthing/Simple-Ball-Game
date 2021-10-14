@@ -173,8 +173,7 @@ public class GameActivity extends AppCompatActivity {
                 high_scores.add(prefs.getInt("Status_" + i, 0));
             }
             Collections.sort(high_scores);
-
-
+            
             //if scoreboard is full set lowest high score to 0 else find lowest value
             if(5>size){
                 minHigh=0;
@@ -233,7 +232,7 @@ public class GameActivity extends AppCompatActivity {
             }
         }
 
-        //Updates the current score on the screen and checks if new high score
+        //Updates the current score on the screen
         public void updateScore()
         {
             ball.resetBall(screenWidth, screenHeight);

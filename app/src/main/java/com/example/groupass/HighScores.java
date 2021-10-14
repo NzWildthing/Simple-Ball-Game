@@ -54,8 +54,8 @@ public class HighScores extends AppCompatActivity {
         for (int i = 0; i < size; i++) {
             high_scores.add(prefs.getInt("Status_" + i, 0));
         }
-        Collections.sort(high_scores, Collections.reverseOrder());
 
+        Collections.sort(high_scores, Collections.reverseOrder());
 
 
         ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.list_item, high_scores);
