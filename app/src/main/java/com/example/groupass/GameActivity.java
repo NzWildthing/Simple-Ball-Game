@@ -67,7 +67,7 @@ public class GameActivity extends AppCompatActivity {
         private GestureDetector gestureDetector;
 
         //Initialises a ball game object
-        public Ball ball = new Ball(0, 0, getColor(R.color.crimson), 50);
+        public Ball ball = new Ball(0, 0, getColor(R.color.red), 50);
         public Target target = new Target(50, 50, getColor(R.color.gold), 50);
         public livesPowerUp extraLives = new livesPowerUp(0, 0, getColor(R.color.black), 50);
         public Random rnd = new Random();
@@ -149,7 +149,7 @@ public class GameActivity extends AppCompatActivity {
                     updateScore();
                 }
                 //Checks extra life
-                if(current_score % 5 == 0 && current_score != 0)
+                if(current_score != 0)
                 {
                     checkExtraLive();
                 }
