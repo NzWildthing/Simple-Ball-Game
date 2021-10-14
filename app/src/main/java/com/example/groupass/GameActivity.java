@@ -491,10 +491,9 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    //Class for a lives power up
-    public class livesPowerUp extends gameObject
+    public class powerUps extends gameObject
     {
-        public livesPowerUp(float xPos, float yPos, int rColor, int radius)
+        public powerUps(float xPos, float yPos, int rColor, int radius)
         {
             //Calls the game object super class
             super(xPos, yPos, rColor, radius);
@@ -516,27 +515,21 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    //Class for a lives power up
+    public class livesPowerUp extends powerUps {
+        public livesPowerUp(float xPos, float yPos, int rColor, int radius) {
+            //Calls the game object super class
+            super(xPos, yPos, rColor, radius);
+        }
+    }
+
     //Class for a target speedup obstacle
-    public class speedupObstacle extends gameObject
+    public class speedupObstacle extends powerUps
     {
         public speedupObstacle(float xPos, float yPos, int rColor, int radius)
         {
             //Calls the game object super class
             super(xPos, yPos, rColor, radius);
-        }
-        //Spawns the speedup obstacle
-        public void spawn(float width, float height, Random rnd)
-        {
-            int xLive = rnd.nextInt((int)width);
-            int yLive = rnd.nextInt((int)(height-(height/5)));
-            //Spawns a random obstacle on the screen somewhere
-            setXY(xLive, yLive);
-        }
-
-        //Resets the obstacle
-        public void reset()
-        {
-            setXY(10000, 10000);
         }
     }
 }
