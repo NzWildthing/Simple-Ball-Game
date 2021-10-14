@@ -67,9 +67,9 @@ public class GameActivity extends AppCompatActivity {
         private GestureDetector gestureDetector;
 
         //Initialises a ball game object
-        public Ball ball = new Ball(0, 0, getColor(R.color.red), 50);
-        public Target target = new Target(50, 50, getColor(R.color.gold), 50);
-        public livesPowerUp extraLives = new livesPowerUp(0, 0, getColor(R.color.black), 50);
+        public Ball ball = new Ball(0, 0, getColor(R.color.blue), 50);
+        public Target target = new Target(50, 50, getColor(R.color.black), getColor(R.color.crimson), 100);
+        public livesPowerUp extraLives = new livesPowerUp(0, 0, getColor(R.color.green), 50);
         public Random rnd = new Random();
 
         //creating lists
@@ -461,9 +461,18 @@ public class GameActivity extends AppCompatActivity {
     //Class for a target game object
     public class Target extends gameObject
     {
-        public Target(float xPos, float yPos, int rColor, int radius) {
+        Paint _sbrush = new Paint();
+
+        public Target(float xPos, float yPos, int rColor, int scolor, int radius) {
             //Calls the game object super class
             super(xPos, yPos, rColor, radius);
+            _sbrush.setColor(scolor);
+        }
+        @Override
+        public void drawObject(Canvas canvas)
+        {
+            super.drawObject(canvas);
+            canvas.drawCircle(_x, _y, _radius/2, _sbrush);
         }
     }
 
@@ -491,6 +500,4 @@ public class GameActivity extends AppCompatActivity {
             setXY(-1, -1);
         }
     }
-
-    public class targ
 }
