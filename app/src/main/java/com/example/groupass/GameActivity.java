@@ -61,7 +61,7 @@ public class GameActivity extends AppCompatActivity {
 
         //Initialises a ball game object
         public Ball ball = new Ball(0, 0, getColor(R.color.blue), 50);
-        public Target target = new Target(50, 50, getColor(R.color.black), getColor(R.color.crimson), 100);
+        public Target target = new Target(50, 50, getColor(R.color.crimson), getColor(R.color.white), 100);
         public livesPowerUp extraLives = new livesPowerUp(100000, 1000000, getColor(R.color.green), 50);
         public speedupObstacle obstacle = new speedupObstacle(1000000, 100000, getColor(R.color.red), 50);
         public Random rnd = new Random();
@@ -408,7 +408,7 @@ public class GameActivity extends AppCompatActivity {
     //Class for a ball game object
     public class Ball extends gameObject
     {
-        public int _lives = 10;
+        public int _lives = 3;
 
         public Ball(float xPos, float yPos, int rColor, int radius)
         {
