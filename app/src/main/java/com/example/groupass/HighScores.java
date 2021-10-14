@@ -54,9 +54,6 @@ public class HighScores extends AppCompatActivity {
         for (int i = 0; i < size; i++) {
             high_scores.add(prefs.getInt("Status_" + i, 0));
         }
-        while(size!=5){
-            high_scores.add(0);
-        }
         Collections.sort(high_scores, Collections.reverseOrder());
 
 
